@@ -2,10 +2,18 @@ Datasets MLIT Address Boundary
 ==============================
 
 国土交通省の[国土数値情報・行政区域データ](http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03.html)
+から行政界を作成し PostGIS 形式のバックアップファイルを作成する。
+
+以下の URL からダウンロード可能：
+
+* https://s3-ap-northeast-1.amazonaws.com/s.kitazaki.name/datasets/mlit/address_boundary.backup
+
+`pg_restore` で取り込める。
 
 ## 環境の準備
 
 データベースを作成し、PostGIS 拡張を有効にする。
+ここではデータベース名を _geo_ とする。
 
     $ createdb -U postgres geo
 
@@ -24,7 +32,8 @@ Datasets MLIT Address Boundary
 
 ## データのインポート
 
-ダウンロードした ZIP ファイルを展開する。
+[国土数値情報ダウンロードサービス](http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03.html)からZIPファイルをダウンロードする。
+４７都道府県が個別のファイルになっているので、ダウンロードした ZIP ファイルを展開する。
 
     $ for f in N03-*.zip
     do
@@ -57,6 +66,7 @@ Shape 形式のファイルを PostGIS にインポートするための SQL フ
     done | grep "|"
 
 名称が不一致のレコードを修正する。
+不一致パターンを追加したい場合は `patch.sql` を修正する。
 
     $ psql -U postgres -d geo -f patch.sql
 
@@ -76,10 +86,12 @@ Shape 形式のファイルを PostGIS にインポートするための SQL フ
 ## データの出力
 
 ダンプファイルを作成する。
+address_boundary テーブルだけが含まれる圧縮形式のファイルで出力する。
 
     $ pg_dump -F c -x -U postgres -d geo -t address_boundary -f address_boundary.backup
 
 S3に保存する。
+アクセスキーなどは `~/.aws/config` で設定しておく。
 
     $ S3_BUCKET=s.kitazaki.name
     $ S3_PATH=datasets/mlit
@@ -89,6 +101,7 @@ S3に保存する。
 
 ## データの出典
 
+* [国土数値情報　ダウンロードサービス](http://nlftp.mlit.go.jp/ksj/index.html)
 * 「国土数値情報（行政区域データ）　国土交通省」
 * 平成２５年度データ
 
