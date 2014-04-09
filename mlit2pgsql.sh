@@ -5,7 +5,7 @@ S3_PATH=datasets/mlit
 
 for f in N03-*.zip
 do
-    unzip -d ${f%.zip} $f
+    unzip -uo -d ${f%.zip} $f
 done
 
 for f in N03-*/*.shp
@@ -23,9 +23,11 @@ done
 
 psql -U postgres -d geo -f patch.sql
 
+psql -U postgres -d geo -f address_boundary.sql
+
 for i in {01..47}
 do
-    psql -U postgres -d geo -f transform.sql -v table="n03-13_${i}_130401"
+    psql -U postgres -d geo -f transform.sql -v table="n03-13_${i}_130401" -v code=${i}
 done
 
 echo "SELECT count(*) FROM address_boundary;" | psql -U postgres -d geo

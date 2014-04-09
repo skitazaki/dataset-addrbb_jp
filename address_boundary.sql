@@ -3,7 +3,7 @@
 DROP TABLE IF EXISTS :"tab";
 
 CREATE TABLE :"tab" (
-    code varchar(5) PRIMARY KEY CHECK (length(code) = 5),
+    code varchar(5) PRIMARY KEY CHECK (length(code) IN (2, 5)),
     pref varchar(10) NOT NULL,
     name varchar(60) NOT NULL,
     geom geometry(MULTIPOLYGON, 4326) NOT NULL

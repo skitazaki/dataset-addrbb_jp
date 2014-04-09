@@ -20,3 +20,9 @@ FROM (
   WHERE n03_007 IS NOT NULL
 ) a
 GROUP BY code, pref, name;
+
+INSERT INTO address_boundary
+SELECT :'code', n03_001, n03_004, ST_Union(ST_SetSRID(geom, 4326))
+FROM :"table"
+WHERE n03_007 IS NULL
+GROUP BY n03_001, n03_004;
