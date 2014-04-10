@@ -52,3 +52,11 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# sample-webapp
+node_modules
+dist
+.tmp
+.sass-cache
+bower_components
+test/bower_components
+geojson
