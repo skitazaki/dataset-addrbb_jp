@@ -59,4 +59,4 @@ dist
 .sass-cache
 bower_components
 test/bower_components
-geojson
+sample-webapp/app/data/
