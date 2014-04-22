@@ -98,10 +98,30 @@ S3に保存する。
     $ fname=address_boundary.backup
     $ aws s3 cp $fname s3://$S3_BUCKET/$S3_PATH/$fname
 
+## 住所コード
+
+[住所.jp](http://jusyo.jp/index.html)からTSV形式のデータをダウンロードする。
+ファイルのエンコーディングは ShiftJIS なので、 `iconv` で UTF8 に変換する。
+
+    $ iconv -f cp932 -t utf8 < zenkoku.txt > zenkoku-utf8.txt
+
+都道府県のコードと名称のマッピングを作成する。
+
+    $ awk 'NR > 1 { printf "%02d\t%s\t%s\n", $2, $8, $9 }' zenkoku-utf8.txt |
+        tr -d '"' | uniq > pref.txt
+
+同様に、市区町村のコードと名称のマッピングを作成する。
+
+    $ awk 'NR > 1 { printf "%05d\t%s\t%s\n", $3, $10, $11 }' zenkoku-utf8.txt |
+        tr -d '"' | tr 'ケ' 'ヶ' | tr '逹' '達' | uniq > address.txt
+
+なお、元データの表記が揃っていない部分があるので調整する。
+
+* 鶴ヶ島市（11241）の「ヶ」の大きさを揃える
+* 羽咋郡宝達志水町（17386）の「逹」を揃える
 
 ## データの出典
 
 * [国土数値情報　ダウンロードサービス](http://nlftp.mlit.go.jp/ksj/index.html)
-* 「国土数値情報（行政区域データ）　国土交通省」
-* 平成２５年度データ
+* 国土数値情報（行政区域データ）　国土交通省　平成２５年度データ
 
